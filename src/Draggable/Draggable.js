@@ -7,6 +7,7 @@ import {
   MouseSensor,
   TouchSensor,
   ForceTouchSensor,
+  KeyboardSensor,
 } from './Sensors';
 
 import {
@@ -174,6 +175,7 @@ export default class Draggable {
     return [
       TouchSensor,
       ForceTouchSensor,
+      KeyboardSensor,
       (this.options.native ? DragSensor : MouseSensor),
     ];
   }
@@ -200,7 +202,7 @@ export default class Draggable {
 
     this.source = this.originalSource.cloneNode(true);
 
-    if (!isDragEvent(originalEvent)) {
+    if (!isDragEvent(originalEvent) && !isKeyboardEvent(originalEvent)) {
       const appendableContainer = this.getAppendableContainer({source: this.originalSource});
       this.mirror = this.source.cloneNode(true);
 
@@ -226,6 +228,7 @@ export default class Draggable {
     }
 
     this.originalSource.parentNode.insertBefore(this.source, this.originalSource);
+    this.source.focus();
 
     this.originalSource.style.display = 'none';
     this.source.classList.add(this.getClassNameFor('source:dragging'));
@@ -505,4 +508,8 @@ function getSensorEvent(event) {
 
 function isDragEvent(event) {
   return /^drag/.test(event.type);
+}
+
+function isKeyboardEvent(event) {
+  return /^key/.test(event.type);
 }
